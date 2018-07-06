@@ -1,6 +1,6 @@
 {
-  "name": "dlopen",
-  "version": "0.0.1",
+  "name": "ldll",
+  "version": "0.0.0",
   "description": "Native bindings to libuv's uv_dlopen() and friends",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/TooTallNate/node-dlopen.git"
+    "url": "https://github.com/sysleaf/node-dlopen.git"
   },
   "keywords": [
     "c",
@@ -23,12 +23,9 @@
     "dll",
     "dylib"
   ],
-  "author": "Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)",
+  "author": "Vikash Kumar <krvikash35@gmail.com>",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/TooTallNate/node-dlopen/issues"
-  },
-  "homepage": "https://github.com/TooTallNate/node-dlopen",
+  "homepage": "https://github.com/sysleaf/node-dlopen",
   "dependencies": {
     "bindings": "~1.2.1",
     "debug": "2"

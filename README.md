@@ -1,9 +1,10 @@
-node-dlopen
+ldll
 ===========
-### Native bindings to libuv's uv_dlopen() and friends
-[![Build Status](https://secure.travis-ci.org/TooTallNate/node-dlopen.svg)](https://travis-ci.org/TooTallNate/node-dlopen)
-[![Build Status](https://ci.appveyor.com/api/projects/status/cip42c512j4k3b12)](https://ci.appveyor.com/project/TooTallNate/node-dlopen)
+### Native bindings to libuv's uv_dlopen() and friends using n-api
 
+[![npm version](https://badge.fury.io/js/ldll.svg)](http://badge.fury.io/js/ldll)
+[![Build Status](https://travis-ci.org/krvikash35/node-dlopen.svg?branch=master)](https://travis-ci.org/krvikash35/node-dlopen)
+[![Coverage Status](https://coveralls.io/repos/github/krvikash35/node-dlopen/badge.svg)](https://coveralls.io/github/krvikash35/node-dlopen)
 
 This module offers access to libuv's `dlopen()`, `dlclose()`, `dlsym()` and
 `dlerror()` functions.
@@ -17,7 +18,7 @@ Installation
 Install with `npm`:
 
 ``` bash
-$ npm install dlopen
+$ npm install ldll
 ```
 
 
@@ -25,7 +26,7 @@ Example
 -------
 
 ``` js
-var dlopen = require('dlopen');
+var dlopen = require('ldll');
 
 // dynamically open the `libc` library
 var libc = dlopen('libc');
@@ -41,7 +42,7 @@ License
 
 (The MIT License)
 
-Copyright (c) 2014 Nathan Rajlich &lt;nathan@tootallnate.net&gt;
+Copyright (c) 2014 Vikash Kumar &lt;krvikash35@gmail.com&gt;
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -61,5 +62,3 @@ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
 CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-[docs]: http://tootallnate.github.com/ref
