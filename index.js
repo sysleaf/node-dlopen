@@ -51,7 +51,7 @@ function Library (name) {
   if (name) {
     // append the `ext` if necessary
     var ext = exports.ext[process.platform];
-    if (name.substring(name.length - ext.length) !== ext) {
+    if ((name.substring(name.length - ext.length) !== ext) && !name.endsWith('.node')) {
       debug('appending dynamic lib suffix (%s)', ext, name);
       name += ext;
     }

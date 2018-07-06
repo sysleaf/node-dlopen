@@ -6,7 +6,7 @@ const path = require('path');
 describe('module', function () {
   it('should be funcion that return object with desired methods', function () {
     assert(typeof dlopen === 'function');
-    const libpath = path.join(__dirname, './libc-2.26.so')
+    const libpath = path.join(__dirname, '../build/Release/binding.node')
     var lib =  dlopen(libpath);
     assert(lib instanceof dlopen);
     assert(dlopen.prototype.hasOwnProperty('get'));
