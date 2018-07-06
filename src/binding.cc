@@ -1,120 +1,120 @@
+#include <node_api.h>
 #include "uv.h"
-#include "node.h"
-#include "node_buffer.h"
-#include "node_version.h"
-#include "nan.h"
+#include <assert.h>
+#include <stdio.h>
 
-namespace {
+napi_value dlopen(napi_env env, napi_callback_info info)
+{
+  char filename[200];
+  uv_lib_t *lib = nullptr;
+  size_t *argvSize = nullptr;
+  size_t argc = 2;
+  napi_value args[2];
+  napi_valuetype argvtype1;
+  napi_value retcode;
+  napi_status status;
+  void *data;
+  size_t length;
 
-/**
- * dlopen()
- */
+  napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
 
-NAN_METHOD(Dlopen) {
-  NanEscapableScope();
-
-  const char *filename;
-  if (args[0]->IsNull()) {
-    filename = NULL;
-  } else if (args[0]->IsString()) {
-    v8::String::Utf8Value name(args[0]);
-    filename = *name;
-  } else {
-    return NanThrowTypeError("a string filename, or null must be passed as the first argument");
+  napi_typeof(env, args[0], &argvtype1);
+  if (argvtype1 == napi_string)
+  {
+    status = napi_get_value_string_utf8(env, args[0], filename, 200, argvSize);
+    assert(status == napi_ok);
+  }
+  else
+  {
+    napi_throw_type_error(env, nullptr, "a string filename must be passed as the first argument");
   }
 
-  v8::Local<v8::Object> buf = args[1].As<v8::Object>();
+  status = napi_get_buffer_info(env, args[1], &data, &length);
+  assert(status == napi_ok);
+  lib = (uv_lib_t *)data;
+  // lib = (uv_lib_t *)malloc(sizeof(uv_lib_t));
+  int err = uv_dlopen(filename, lib);
 
-  uv_lib_t *lib = reinterpret_cast<uv_lib_t *>(node::Buffer::Data(buf));
-  int r = 0;
-
-#if NODE_VERSION_AT_LEAST(0, 7, 9)
-  r = uv_dlopen(filename, lib);
-#else
-  uv_err_t err = uv_dlopen(filename, lib);
-  if (err.code != UV_OK) {
-    r = err.code;
-  }
-#endif
-
-  NanReturnValue(NanNew<v8::Integer>(r));
+  napi_create_int32(env, err, &retcode);
+  return retcode;
 }
 
-/**
- * dlclose()
- */
+napi_value dlclose(napi_env env, napi_callback_info info)
+{
+  napi_value retcode;
+  uv_lib_t *lib = nullptr;
+  size_t argc = 1;
+  napi_value args[1];
+  void *data;
+  size_t length;
+  napi_status status;
 
-NAN_METHOD(Dlclose) {
-  NanEscapableScope();
+  status = napi_get_undefined(env, &retcode);
+  assert(status == napi_ok);
 
-  v8::Local<v8::Object> buf = args[0].As<v8::Object>();
 
-  uv_lib_t *lib = reinterpret_cast<uv_lib_t *>(node::Buffer::Data(buf));
+  status = napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
+  assert(status == napi_ok);
+
+  status = napi_get_buffer_info(env, args[0], &data, &length);
+  assert(status == napi_ok);
+  lib = (uv_lib_t *)data;
 
   uv_dlclose(lib);
-
-  NanReturnUndefined();
+  return retcode;
 }
 
-/**
- * dlsym()
- */
+napi_value dlsym(napi_env env, napi_callback_info info)
+{
+  char symbname[200];
+  uv_lib_t *lib = nullptr;
+  size_t *argvSize = nullptr;
+  size_t argc = 3;
+  napi_value args[3];
+  napi_valuetype argvtype1;
+  napi_value retcode;
+  napi_status status;
+  void *data;
+  void *sym;
+  size_t length;
 
-NAN_METHOD(Dlsym) {
-  NanEscapableScope();
+  status = napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
+  assert(status == napi_ok);
 
-  v8::Local<v8::Object> buf = args[0].As<v8::Object>();
-  v8::String::Utf8Value name(args[1]);
-  v8::Local<v8::Object> sym_buf = args[2].As<v8::Object>();
+  status = napi_get_buffer_info(env, args[0], &data, &length);
+  assert(status == napi_ok);
+  lib = (uv_lib_t *)data;
 
-  uv_lib_t *lib = reinterpret_cast<uv_lib_t *>(node::Buffer::Data(buf));
-  void *sym = reinterpret_cast<void *>(node::Buffer::Data(sym_buf));
+  status = napi_get_value_string_utf8(env, args[1], symbname, 200, argvSize);
+  assert(status == napi_ok);
 
-  int r = 0;
-#if NODE_VERSION_AT_LEAST(0, 7, 9)
-  r = uv_dlsym(lib, *name, &sym);
-#else
-  uv_err_t err = uv_dlsym(lib, *name, &sym);
-  if (err.code != UV_OK) {
-    r = err.code;
-  }
-#endif
+  status = napi_get_buffer_info(env, args[2], &sym, &length);
+  assert(status == napi_ok);
+  
+  int err = uv_dlsym(lib, symbname, &sym);
 
-  NanReturnValue(NanNew<v8::Integer>(r));
+  napi_create_int32(env, err, &retcode);
+  return retcode;
 }
 
-/**
- * dlerror()
- */
+napi_value Init(napi_env env, napi_value exports)
+{
+  napi_status status;
+  napi_value sizeof_void_ptr;
+  napi_value sizeof_uv_lib_t;
 
-#if NODE_VERSION_AT_LEAST(0, 7, 9)
+  napi_create_int32(env, sizeof(void *), &sizeof_void_ptr);
+  napi_create_int32(env, sizeof(uv_lib_t), &sizeof_uv_lib_t);
 
-NAN_METHOD(Dlerror) {
-  NanEscapableScope();
-
-  v8::Local<v8::Object> buf = args[0].As<v8::Object>();
-
-  uv_lib_t *lib = reinterpret_cast<uv_lib_t *>(node::Buffer::Data(buf));
-
-  NanReturnValue(NanNew<v8::String>(uv_dlerror(lib)));
+  napi_property_descriptor descs[] = {
+      {"dlopen", 0, dlopen, 0, 0, 0, napi_default, 0},
+      {"dlclose", 0, dlclose, 0, 0, 0, napi_default, 0},
+      {"dlsym", 0, dlsym, 0, 0, 0, napi_default, 0},
+      {"sizeof_void_ptr", 0, 0, 0, 0, sizeof_void_ptr, napi_default, 0},
+      {"sizeof_uv_lib_t", 0, 0, 0, 0, sizeof_uv_lib_t, napi_default, 0},
+  };
+  status = napi_define_properties(env, exports, sizeof(descs) / sizeof(descs[0]), descs);
+  return exports;
 }
 
-#endif
-
-} // anonymous namespace
-
-void init (v8::Handle<v8::Object> target) {
-  NanScope();
-
-  target->Set(NanNew<v8::String>("sizeof_uv_lib_t"), NanNew<v8::Uint32>(static_cast<uint32_t>(sizeof(uv_lib_t))));
-  target->Set(NanNew<v8::String>("sizeof_void_ptr"), NanNew<v8::Uint32>(static_cast<uint32_t>(sizeof(void *))));
-
-  NODE_SET_METHOD(target, "dlopen", Dlopen);
-  NODE_SET_METHOD(target, "dlclose", Dlclose);
-  NODE_SET_METHOD(target, "dlsym", Dlsym);
-#if NODE_VERSION_AT_LEAST(0, 7, 9)
-  // libuv with node < 0.7.9 didn't have any dlerror() function
-  NODE_SET_METHOD(target, "dlerror", Dlerror);
-#endif
-}
-NODE_MODULE(binding, init);
+NAPI_MODULE(NODE_GYP_MODULE_NAME, Init)
