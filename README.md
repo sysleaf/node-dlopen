@@ -3,8 +3,8 @@ ldll
 ### Native bindings to libuv's uv_dlopen() and friends using n-api
 
 [![npm version](https://badge.fury.io/js/ldll.svg)](http://badge.fury.io/js/ldll)
-[![Build Status](https://travis-ci.org/krvikash35/node-dlopen.svg?branch=master)](https://travis-ci.org/krvikash35/node-dlopen)
-[![Coverage Status](https://coveralls.io/repos/github/krvikash35/node-dlopen/badge.svg)](https://coveralls.io/github/krvikash35/node-dlopen)
+[![Build Status](https://travis-ci.org/sysleaf/node-dlopen.svg?branch=master)](https://travis-ci.org/sysleaf/node-dlopen)
+[![Coverage Status](https://coveralls.io/repos/github/sysleaf/node-dlopen/badge.svg)](https://coveralls.io/github/sysleaf/node-dlopen)
 
 This module offers access to libuv's `dlopen()`, `dlclose()`, `dlsym()` and
 `dlerror()` functions.
